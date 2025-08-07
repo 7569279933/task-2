@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sea Bloom | Daily Notes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Lato&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Lato', sans-serif;
+      background: url('https://images.unsplash.com/photo-1501004318641-b39e6451bec6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
+      background-size: cover;
+      overflow-x: hidden;
+    }
+
+    .overlay {
+      background-color: rgba(255, 255, 255, 0.88);
+      padding: 60px 40px;
+      max-width: 900px;
+      margin: 60px auto;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+      position: relative;
+      z-index: 2;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3em;
+      color: #013A63;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .note-date {
+      text-align: center;
+      font-size: 1.2em;
+      color: #006D77;
+      margin-bottom: 20px;
+    }
+
+    .notes-section {
+      margin-top: 20px;
+    }
+
+    .note {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      transition: transform 0.2s ease;
+      position: relative;
+    }
+
+    .note:hover {
+      transform: scale(1.02);
+    }
+
+    .note-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5em;
+      color: #014F86;
+      margin-bottom: 10px;
+    }
+
+    .note-content {
+      font-size: 1.1em;
+      color: #333;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .note-buttons {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+
+    .note-buttons button {
+      margin-left: 8px;
+      padding: 4px 8px;
+      font-size: 0.9em;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background: #2C7DA0;
+      color: white;
+    }
+
+    .note-buttons button:hover {
+      background: #014F86;
+    }
+
+    .add-note-form {
+      margin-top: 30px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #aaa;
+      font-size: 1em;
+      resize: vertical;
+    }
+
+    .add-note-btn {
+      margin-top: 15px;
+      padding: 12px 25px;
+      background-color: #2C7DA0;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .add-note-btn:hover {
+      background-color: #014F86;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 0.9em;
+      color: #555;
+    }
+
+    .flower {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background: url('https://www.pngall.com/wp-content/uploads/5/Pink-Flower-PNG-Image.png') no-repeat center center;
+      background-size: contain;
+      animation: floatFlower 30s linear infinite;
+      opacity: 0.3;
+      z-index: 1;
+    }
+
+    @keyframes floatFlower {
+      0% { transform: translateY(100vh) rotate(0deg); left: 0%; }
+      100% { transform: translateY(-100vh) rotate(360deg); left: 100%; }
+    }
+
+    @media (max-width: 768px) {
+      .overlay { padding: 30px 20px; }
+      h1 { font-size: 2em; }
+      .note-title { font-size: 1.3em; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Animated Flowers -->
+  <div class="flower" style="top: 80%; left: 10%; animation-delay: 0s;"></div>
+  <div class="flower" style="top: 90%; left: 50%; animation-delay: 10s;"></div>
+  <div class="flower" style="top: 95%; left: 80%; animation-delay: 20s;"></div>
+
+  <div class="overlay">
+    <h1>🌊 Sea Bloom Daily Notes 🌸</h1>
+    <div class="note-date" id="today-date"></div>
+
+    <div class="notes-section" id="notes-section"></div>
+
+    <div class="add-note-form">
+      <textarea id="note-input" rows="5" placeholder="Write your new note here..."></textarea>
+      <button class="add-note-btn" onclick="addNote()">➕ Add Note</button>
+    </div>
+
+    <footer>
+      &copy; 2025 Sea Bloom — Designed with 🌸 and 🌊 by You
+    </footer>
+  </div>
+
+  <script>
+    const notesSection = document.getElementById("notes-section");
+    const noteInput = document.getElementById("note-input");
+
+    // Display current date
+    document.getElementById("today-date").textContent =
+      new Date().toLocaleDateString("en-IN", {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+
+    // Load saved notes from localStorage
+    let notes = JSON.parse(localStorage.getItem("dailyNotes")) || [];
+    displayNotes();
+
+    function addNote() {
+      const content = noteInput.value.trim();
+      if (content === "") return;
+      const newNote = {
+        id: Date.now(),
+        content
+      };
+      notes.unshift(newNote);
+      localStorage.setItem("dailyNotes", JSON.stringify(notes));
+      noteInput.value = "";
+      displayNotes();
+    }
+
+    function displayNotes() {
+      notesSection.innerHTML = "";
+      notes.forEach(note => {
+        const noteDiv = document.createElement("div");
+        noteDiv.className = "note";
+        noteDiv.innerHTML = `
+          <div class="note-title">📝 Note</div>
+          <div class="note-content">${note.content}</div>
+          <div class="note-buttons">
+            <button onclick="editNote(${note.id})">Edit</button>
+            <button onclick="deleteNote(${note.id})">Delete</button>
+          </div>
+        `;
+        notesSection.appendChild(noteDiv);
+      });
+    }
+
+    function deleteNote(id) {
+      if (!confirm("Delete this note?")) return;
+      notes = notes.filter(n => n.id !== id);
+      localStorage.setItem("dailyNotes", JSON.stringify(notes));
+      displayNotes();
+    }
+
+    function editNote(id) {
+      const note = notes.find(n => n.id === id);
+      const newContent = prompt("Edit your note:", note.content);
+      if (newContent !== null && newContent.trim() !== "") {
+        note.content = newContent.trim();
+        localStorage.setItem("dailyNotes", JSON.stringify(notes));
+        displayNotes();
+      }
+    }
+  </script>
+</body>
+</html>
