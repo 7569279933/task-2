@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <title>Sea Bloom Notes</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Daily Notes | Sea Bloom</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Lato&display=swap" rel="stylesheet">
   <style>
     body {
@@ -38,11 +38,42 @@
       text-align: center;
       font-size: 1.2em;
       color: #B2DFDB;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
       margin-bottom: 20px;
     }
 
-    .notes-section {
-      margin-top: 20px;
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      font-size: 1em;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      resize: vertical;
+    }
+
+    textarea {
+      height: 100px;
+    }
+
+    .add-note-btn {
+      display: block;
+      margin: 0 auto 30px;
+      padding: 12px 25px;
+      background-color: #00796B;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .add-note-btn:hover {
+      background-color: #004D40;
     }
 
     .note {
@@ -52,6 +83,7 @@
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
       margin-bottom: 20px;
       transition: transform 0.2s ease;
+      position: relative;
     }
 
     .note:hover {
@@ -72,21 +104,19 @@
       font-family: 'Lato', sans-serif;
     }
 
-    .add-note-btn {
-      display: block;
-      margin: 30px auto 0;
-      padding: 12px 25px;
-      background-color: #00796B;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1em;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
+    .note-buttons {
+      position: absolute;
+      top: 10px;
+      right: 15px;
     }
 
-    .add-note-btn:hover {
-      background-color: #004D40;
+    .note-buttons button {
+      background: none;
+      border: none;
+      color: #B2DFDB;
+      font-size: 1em;
+      cursor: pointer;
+      margin-left: 10px;
     }
 
     footer {
@@ -143,37 +173,66 @@
 
   <div class="overlay">
     <h1>🌊 Sea Bloom Daily Notes 🌸</h1>
-    <div class="note-date">Thursday, August 7, 2025</div>
+    <div class="note-date" id="currentDate"></div>
 
-    <div class="notes-section">
-      <div class="note">
-        <div class="note-title">🌅 Morning Reflection</div>
-        <div class="note-content">
-          Embracing the start of the day with a calm mind. Today, I aim to focus on positivity, presence, and productivity.
-        </div>
-      </div>
-
-      <div class="note">
-        <div class="note-title">🎯 Today's Priorities</div>
-        <div class="note-content">
-          - Finish the React project<br>
-          - Review internship checklist<br>
-          - Write 1-page journal reflection
-        </div>
-      </div>
-
-      <div class="note">
-        <div class="note-title">🌙 Night Notes</div>
-        <div class="note-content">
-          Felt more aligned today. Working in this themed app helps me stay creative and relaxed. Ready for tomorrow!
-        </div>
-      </div>
+    <div class="form-group">
+      <input type="text" id="titleInput" placeholder="Note Title...">
     </div>
+    <div class="form-group">
+      <textarea id="noteInput" placeholder="Write your note here..."></textarea>
+    </div>
+    <button class="add-note-btn" onclick="addNote()">➕ Add Note</button>
 
-    <button class="add-note-btn">➕ Add New Note</button>
+    <div class="notes-section" id="notesSection"></div>
 
     <footer>&copy; 2025 Sea Bloom — Designed with love 💚</footer>
   </div>
+
+  <script>
+    const noteInput = document.getElementById("noteInput");
+    const titleInput = document.getElementById("titleInput");
+    const notesSection = document.getElementById("notesSection");
+
+    function addNote() {
+      const title = titleInput.value.trim();
+      const content = noteInput.value.trim();
+      if (!content || !title) return alert("Please enter both title and note.");
+
+      const noteDiv = document.createElement("div");
+      noteDiv.classList.add("note");
+
+      noteDiv.innerHTML = `
+        <div class="note-buttons">
+          <button onclick="editNote(this)">🖊️</button>
+          <button onclick="deleteNote(this)">🗑️</button>
+        </div>
+        <div class="note-title">${title}</div>
+        <div class="note-content">${content}</div>
+      `;
+
+      notesSection.prepend(noteDiv);
+      titleInput.value = "";
+      noteInput.value = "";
+    }
+
+    function deleteNote(btn) {
+      if (confirm("Are you sure you want to delete this note?")) {
+        btn.closest(".note").remove();
+      }
+    }
+
+    function editNote(btn) {
+      const note = btn.closest(".note");
+      const title = note.querySelector(".note-title").textContent;
+      const content = note.querySelector(".note-content").textContent;
+      titleInput.value = title;
+      noteInput.value = content;
+      note.remove();
+    }
+
+    // Set current date
+    document.getElementById("currentDate").textContent = new Date().toDateString();
+  </script>
 
 </body>
 </html>
